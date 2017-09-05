@@ -18,6 +18,11 @@ Our aim is to predict the basket size as well as the products bought in the next
 
 Running the code
 
+Download only the following 2 files from https://www.kaggle.com/c/instacart-market-basket-analysis/data
+1. order_products__prior.csv
+2. order_products__train.csv
+Place them in /data directory
+
 Run python files in the following order:
 1. svd_train_val.py
 2. print_predictions.py
