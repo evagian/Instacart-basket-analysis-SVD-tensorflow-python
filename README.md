@@ -4,6 +4,19 @@ The dataset used for this project purposes consists of 3 million open source onl
 
 Market basket analysis is an important component of every retail company. Simple, yet powerful - MBA is an inexpensive technique to identify cross-sell opportunities and engage customers. At the same time, personalized recommendation systems differentiate companies from the competition and they can lead to competitive advantages. Moreover, recommendation systems are proven to improve user experience, to increase user traffic and the number of purchases and to encourage user engagement and satisfaction. This competition was an opportunity for us to expand our knowledge and to gain hands on experience on models and techniques used in the fields of basket analysis and recommendation systems.
 
+Data
+
+The dataset used for this project purposes consists of 3 million open source online grocery store orders from more than 200 thousands of users. For each user, it contains between 4 and 100 of their orders, with the sequence of products purchased in each order. It also includes information concerning the week and hour of day that the order was placed, and a relative measure of time between orders. 
+
+The dataset can be found here: https://www.kaggle.com/c/instacart-market-basket-analysis/data
+
+The dataset was too large to be handled and in order to deal with the memory overload problem, we kept the last 6 orders of every user and dropped the rest. We then split the dataset into 2 sets: train set and test set. The test set contained the last order of every user and the train set contained the rest. 
+
+Singular Value Decomposition 
+
+Our aim is to predict the basket size as well as the products bought in the next order of each user. In the first step, we use Singular Value Decomposition (SVD) in order to estimate the size of the basket that we want to predict. Let’s say for example that the estimated basket size equals to n. In the second step we will predict the n products which we believe that the user will buy in his next order. To do so we will use statistic metrics of users’ consumer behavior. We will rank the importance of each product to each user taking under consideration user’s past purchases and preferences. Finally, we will recommend to each user the n products with the highest ranking.
+
+Data Overview 
 
 ```python
 import numpy as np # linear algebra
@@ -17,17 +30,7 @@ color = sns.color_palette()
 
 pd.options.mode.chained_assignment = None  # default='warn
 ```
-Data
 
-The dataset used for this project purposes consists of 3 million open source online grocery store orders from more than 200 thousands of users. For each user, it contains between 4 and 100 of their orders, with the sequence of products purchased in each order. It also includes information concerning the week and hour of day that the order was placed, and a relative measure of time between orders. 
-
-The dataset was too large to be handled and in order to deal with the memory overload problem, we kept the last 6 orders of every user and dropped the rest. We then split the dataset into 2 sets: train set and test set. The test set contained the last order of every user and the train set contained the rest. 
-
-Singular Value Decomposition 
-
-Our aim is to predict the basket size as well as the products bought in the next order of each user. In the first step, we use Singular Value Decomposition (SVD) in order to estimate the size of the basket that we want to predict. Let’s say for example that the estimated basket size equals to n. In the second step we will predict the n products which we believe that the user will buy in his next order. To do so we will use statistic metrics of users’ consumer behavior. We will rank the importance of each product to each user taking under consideration user’s past purchases and preferences. Finally, we will recommend to each user the n products with the highest ranking.
-
-Data Overview 
 
 
 ```python
@@ -448,4 +451,17 @@ Hardware
 2.      12GB DDR3
 3.      SSD
 
+Bibliography
 
+Dataset 
+
+Instacart Market Basket Analysis, https://www.kaggle.com/c/instacart-market-basket-analysis/data
+
+SVD model
+
+Guocong Song, TF-recomm. GitHub. Retrieved from https://github.com/songgc/TF-recomm
+Yehuda Koren, Factorization Meets the Neighborhood: a Multifaceted Collaborative Filtering Model
+Introduction to Word2Vec, https://deeplearning4j.org/word2vec
+Recommender systems with TensorFlow, https://theintelligenceofinformation.wordpress.com/2017/05/31/recommender-systems-with-tensorflow/
+Singular Value Decomposition | Stanford University, https://www.youtube.com/watch?v=P5mlg91as1c&t=9s
+Making sense of word2vec , https://rare-technologies.com/making-sense-of-word2vec/
