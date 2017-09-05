@@ -8,13 +8,21 @@ Data
 
 The dataset used for this project purposes consists of 3 million open source online grocery store orders from more than 200 thousands of users. For each user, it contains between 4 and 100 of their orders, with the sequence of products purchased in each order. It also includes information concerning the week and hour of day that the order was placed, and a relative measure of time between orders. 
 
-The dataset can be found here: https://www.kaggle.com/c/instacart-market-basket-analysis/data
+The dataset can be found here: https://www.kaggle.com/c/instacart-market-basket-analysis/data. All data files should be placed in the /data directory.
 
 The dataset was too large to be handled and in order to deal with the memory overload problem, we kept the last 6 orders of every user and dropped the rest. We then split the dataset into 2 sets: train set and test set. The test set contained the last order of every user and the train set contained the rest. 
 
 Singular Value Decomposition 
 
 Our aim is to predict the basket size as well as the products bought in the next order of each user. In the first step, we use Singular Value Decomposition (SVD) in order to estimate the size of the basket that we want to predict. Let’s say for example that the estimated basket size equals to n. In the second step we will predict the n products which we believe that the user will buy in his next order. To do so we will use statistic metrics of users’ consumer behavior. We will rank the importance of each product to each user taking under consideration user’s past purchases and preferences. Finally, we will recommend to each user the n products with the highest ranking.
+
+Running the code
+
+Run python files in the following order:
+1. svd_train_val.py
+2. print_predictions.py
+3. model_evaluation.py
+
 
 Data Overview 
 
