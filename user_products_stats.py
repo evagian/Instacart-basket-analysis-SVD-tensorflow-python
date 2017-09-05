@@ -98,5 +98,5 @@ print user_product_stats.head(10)
 user_product_stats = user_product_stats.sort_values(['user_id', 'prod_percent_baskets', 'average_order_position', 'percent_reordered', 'days_since_prior_order2'], ascending=[True, False, True, False, True])
 print user_product_stats.head(30)
 
-filename = 'data/user_product_stats.csv'
-user_product_stats.to_csv(filename, index=False, encoding='utf-8')
+#filename = 'data/user_product_stats2.csv'
+#user_product_stats.to_csv(filename, index=False, encoding='utf-8')
