@@ -58,7 +58,6 @@ print(check_output(["ls", "data"]).decode("utf8"))
     orders.csv
     products.csv
     sample_submission.csv
-    Untitled Folder
     
 
 
