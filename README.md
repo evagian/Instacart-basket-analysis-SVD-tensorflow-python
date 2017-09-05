@@ -17,6 +17,11 @@ color = sns.color_palette()
 
 pd.options.mode.chained_assignment = None  # default='warn
 ```
+Data
+
+The dataset used for this project purposes consists of 3 million open source online grocery store orders from more than 200 thousands of users. For each user, it contains between 4 and 100 of their orders, with the sequence of products purchased in each order. It also includes information concerning the week and hour of day that the order was placed, and a relative measure of time between orders. 
+
+The dataset was too large to be handled and in order to deal with the memory overload problem, we kept the last 6 orders of every user and dropped the rest. We then split the dataset into 2 sets: train set and test set. The test set contained the last order of every user and the train set contained the rest. 
 
 
 ```python
@@ -44,7 +49,7 @@ products_df = pd.read_csv("data/products.csv")
 aisles_df = pd.read_csv("data/aisles.csv")
 departments_df = pd.read_csv("data/departments.csv")
 ```
-
+The first file includes a list of all orders, one row per order. For example, we can see that user 1 has 11 orders, 1 of which is in the train set, and 10 of which are prior orders. This file also contains the order number, the day of the week and hour of the day when the order was made and finally the days since the user’s prior order. The orders.csv doesn’t not include which products were purchased in each order. This is contained in the order_products.csv
 
 ```python
 orders_df.head()
@@ -123,7 +128,7 @@ orders_df.head()
 </div>
 
 
-
+The second and third file specifies which products were purchased in each prior and train order accordingly. Order_products__prior.csv contains previous order contents for all customers, while Order_products__train.csv contains the last order of every user which is the order that we want to predict. The attribute ‘add_to_cart_order’ describes the order in which the user bought one specific product while completing his order. The attribute 'reordered' indicates that the customer has a previous order.that contains the product. 
 
 ```python
 order_products_prior_df.head()
@@ -185,7 +190,6 @@ order_products_prior_df.head()
 
 
 
-
 ```python
 order_products_train_df.head()
 ```
@@ -244,6 +248,7 @@ order_products_train_df.head()
 </table>
 </div>
 
+The fourth file contains the names of the products with their corresponding product_id. Furthermore the aisle and department are included.
 
 
 
@@ -305,7 +310,7 @@ products_df.head()
 </table>
 </div>
 
-
+The fifth file contains the different aisles in which the products belong.
 
 
 ```python
@@ -354,7 +359,7 @@ aisles_df.head()
 </table>
 </div>
 
-
+Finally, the fifth file contains the different departments in which the products belong.
 
 
 ```python
@@ -404,391 +409,4 @@ departments_df.head()
 </div>
 
 
-
-
-```python
-cnt_srs = orders_df.eval_set.value_counts()
-
-plt.figure(figsize=(12,8))
-sns.barplot(cnt_srs.index, cnt_srs.values, alpha=0.8)
-plt.ylabel('Number of Orders', fontsize=14)
-plt.title('Count of rows in each dataset', fontsize=16)
-plt.xticks(rotation='horizontal', fontsize=14)
-plt.show()
-```
-
-
-![png](output_9_0.png)
-
-
-
-```python
-def get_unique_count(x):
-    return len(np.unique(x))
-
-cnt_srs = orders_df.groupby("eval_set")["user_id"].aggregate(get_unique_count)
-cnt_srs
-```
-
-
-
-
-    eval_set
-    prior    206209
-    test      75000
-    train    131209
-    Name: user_id, dtype: int64
-
-
-
-
-```python
-cnt_srs = orders_df.groupby("user_id")["order_number"].aggregate(np.max).reset_index()
-cnt_srs = cnt_srs.order_number.value_counts()
-cnt_srs = cnt_srs.nlargest(20)
-
-plt.figure(figsize=(12,8))
-sns.barplot(cnt_srs.index, cnt_srs.values, alpha=0.8)
-plt.ylabel('Number of Users', fontsize=14)
-plt.xlabel('How Many Times Did They Order?', fontsize=14)
-plt.xticks(rotation='horizontal')
-plt.show()
-```
-
-
-![png](output_11_0.png)
-
-
-
-```python
-grouped_df = orders_df.groupby(["order_dow", "order_hour_of_day"])["order_number"].aggregate("count").reset_index()
-grouped_df = grouped_df.pivot('order_dow', 'order_hour_of_day', 'order_number')
-
-plt.figure(figsize=(16,6))
-sns.heatmap(grouped_df,  cmap='Reds')
-plt.ylabel('Day of Week', fontsize=14)
-plt.xlabel('Hour of Day', fontsize=14)
-plt.title("Days of week and hours of day with the most orders", fontsize=16)
-plt.show()
-```
-
-
-![png](output_12_0.png)
-
-
-
-```python
-print 'percentage of reordered products in prior set'
-print round(order_products_prior_df.reordered.sum() / float(order_products_prior_df.shape[0]),4)*100, '%'
-```
-
-    percentage of reordered products in prior set
-    58.97 %
-
-
-
-```python
-print 'orders with reordered products'
-grouped_df = order_products_prior_df.groupby("order_id")["reordered"].aggregate("sum").reset_index()
-grouped_df["reordered"].ix[grouped_df["reordered"]>1] = 1
-grouped_df.reordered.value_counts() / grouped_df.shape[0]
-```
-
-    orders with reordered products
-
-
-
-
-
-    1    0.879151
-    0    0.120849
-    Name: reordered, dtype: float64
-
-
-
-
-```python
-grouped_df = order_products_train_df.groupby("order_id")["add_to_cart_order"].aggregate("max").reset_index()
-cnt_srs = grouped_df.add_to_cart_order.value_counts()
-cnt_srs = cnt_srs.nlargest(20)
-
-plt.figure(figsize=(12,8))
-sns.barplot(cnt_srs.index, cnt_srs.values, alpha=0.8)
-plt.ylabel('Number of Orders', fontsize=14)
-plt.xlabel('What is the Most Frequent Basket Size?', fontsize=14)
-plt.xticks(rotation='horizontal')
-plt.show()
-```
-
-
-![png](output_15_0.png)
-
-
-
-```python
-print 'Merge products with prior orders'
-order_products_prior_df = pd.merge(order_products_prior_df, products_df, on='product_id')
-order_products_prior_df = pd.merge(order_products_prior_df, aisles_df, on='aisle_id')
-order_products_prior_df = pd.merge(order_products_prior_df, departments_df, on='department_id')
-order_products_prior_df.head()
-```
-
-    Merge products with prior orders
-
-
-
-
-
-<div>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>order_id</th>
-      <th>product_id</th>
-      <th>add_to_cart_order</th>
-      <th>reordered</th>
-      <th>product_name</th>
-      <th>aisle_id</th>
-      <th>department_id</th>
-      <th>aisle</th>
-      <th>department</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>2</td>
-      <td>33120</td>
-      <td>1</td>
-      <td>1</td>
-      <td>Organic Egg Whites</td>
-      <td>86</td>
-      <td>16</td>
-      <td>eggs</td>
-      <td>dairy eggs</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>26</td>
-      <td>33120</td>
-      <td>5</td>
-      <td>0</td>
-      <td>Organic Egg Whites</td>
-      <td>86</td>
-      <td>16</td>
-      <td>eggs</td>
-      <td>dairy eggs</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>120</td>
-      <td>33120</td>
-      <td>13</td>
-      <td>0</td>
-      <td>Organic Egg Whites</td>
-      <td>86</td>
-      <td>16</td>
-      <td>eggs</td>
-      <td>dairy eggs</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>327</td>
-      <td>33120</td>
-      <td>5</td>
-      <td>1</td>
-      <td>Organic Egg Whites</td>
-      <td>86</td>
-      <td>16</td>
-      <td>eggs</td>
-      <td>dairy eggs</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>390</td>
-      <td>33120</td>
-      <td>28</td>
-      <td>1</td>
-      <td>Organic Egg Whites</td>
-      <td>86</td>
-      <td>16</td>
-      <td>eggs</td>
-      <td>dairy eggs</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-
-
-
-
-```python
-print 'Most frequently bought products'
-cnt_srs = order_products_prior_df['product_name'].value_counts().reset_index().head(20)
-cnt_srs.columns = ['product_name', 'frequency_count']
-cnt_srs
-```
-
-    Most frequently bought products
-
-
-
-
-
-<div>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>product_name</th>
-      <th>frequency_count</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>Banana</td>
-      <td>472565</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>Bag of Organic Bananas</td>
-      <td>379450</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>Organic Strawberries</td>
-      <td>264683</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>Organic Baby Spinach</td>
-      <td>241921</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>Organic Hass Avocado</td>
-      <td>213584</td>
-    </tr>
-    <tr>
-      <th>5</th>
-      <td>Organic Avocado</td>
-      <td>176815</td>
-    </tr>
-    <tr>
-      <th>6</th>
-      <td>Large Lemon</td>
-      <td>152657</td>
-    </tr>
-    <tr>
-      <th>7</th>
-      <td>Strawberries</td>
-      <td>142951</td>
-    </tr>
-    <tr>
-      <th>8</th>
-      <td>Limes</td>
-      <td>140627</td>
-    </tr>
-    <tr>
-      <th>9</th>
-      <td>Organic Whole Milk</td>
-      <td>137905</td>
-    </tr>
-    <tr>
-      <th>10</th>
-      <td>Organic Raspberries</td>
-      <td>137057</td>
-    </tr>
-    <tr>
-      <th>11</th>
-      <td>Organic Yellow Onion</td>
-      <td>113426</td>
-    </tr>
-    <tr>
-      <th>12</th>
-      <td>Organic Garlic</td>
-      <td>109778</td>
-    </tr>
-    <tr>
-      <th>13</th>
-      <td>Organic Zucchini</td>
-      <td>104823</td>
-    </tr>
-    <tr>
-      <th>14</th>
-      <td>Organic Blueberries</td>
-      <td>100060</td>
-    </tr>
-    <tr>
-      <th>15</th>
-      <td>Cucumber Kirby</td>
-      <td>97315</td>
-    </tr>
-    <tr>
-      <th>16</th>
-      <td>Organic Fuji Apple</td>
-      <td>89632</td>
-    </tr>
-    <tr>
-      <th>17</th>
-      <td>Organic Lemon</td>
-      <td>87746</td>
-    </tr>
-    <tr>
-      <th>18</th>
-      <td>Apple Honeycrisp Organic</td>
-      <td>85020</td>
-    </tr>
-    <tr>
-      <th>19</th>
-      <td>Organic Grape Tomatoes</td>
-      <td>84255</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-
-
-
-
-```python
-grouped_df = order_products_prior_df.groupby(["department"])["reordered"].aggregate("mean").reset_index()
-
-plt.figure(figsize=(12,8))
-sns.pointplot(grouped_df['department'].values, grouped_df['reordered'].values, alpha=0.8, color=color[2])
-plt.ylabel('Reorder ratio', fontsize=14)
-plt.xlabel('Department', fontsize=14)
-plt.title("Department - Reorder ratio", fontsize=16)
-plt.xticks(rotation='vertical')
-plt.show()
-```
-
-
-![png](output_18_0.png)
-
-
-
-```python
-order_products_prior_df["add_to_cart_order"] = order_products_prior_df["add_to_cart_order"].copy()
-order_products_prior_df["add_to_cart_order"].ix[order_products_prior_df["add_to_cart_order"]>70] = 70
-grouped_df = order_products_prior_df.groupby(["add_to_cart_order"])["reordered"].aggregate("mean").reset_index()
-
-plt.figure(figsize=(12,8))
-sns.pointplot(grouped_df['add_to_cart_order'].values, grouped_df['reordered'].values, alpha=0.8, color=color[2])
-plt.ylabel('Reorder ratio', fontsize=14)
-plt.xlabel('Add to cart order', fontsize=14)
-plt.title("Add to cart order - Reorder ratio", fontsize=16)
-plt.xticks(rotation='vertical')
-plt.show()
-```
-
-
-![png](output_19_0.png)
-
-
-
-```python
-
-```
+The dataset consists of information about 3.4 million grocery orders, distributed across 6 csv files as it was mentioned earlier. There are 206,209 customers in total. Out of which, the last purchase of 131,209 customers are given as train set and we need to predict for the rest 75,000 customers. The products belong to 134 aisles and the aisles belong to 21 departments.
