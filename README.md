@@ -445,6 +445,15 @@ SVD Model Step 2
 
 In this step we will predict the products in the next basket. For every user - product relationship we calculated a rating system based on the user’s past consumer behavior. These statistics include the percentage of baskets in which user x purchased product y, the reorder rate of each product, the average purchase order in which user x purchases product y, the average purchase frequency of each product etc. Every possible user – product relationship was then ranked and sorted in decreasing order. Higher ranks mean that user x will probably buy product y in his next order. Therefore, if in step 1 we had predicted that the size of the next basket of user x equals to 5, then in the second step we would recommend to user x the 5 products with the highest ranking.
 
+Results 
+
+SVD performed significantly better than the other models used for this project.
+
+![alt text](https://github.com/evagian/Instacart-basket-analysis-SVD-tensorflow-python/blob/master/doc/results-graph.png)
+
+![alt text](https://github.com/evagian/Instacart-basket-analysis-SVD-tensorflow-python/blob/master/doc/results-graph1.png)
+
+![alt text](https://github.com/evagian/Instacart-basket-analysis-SVD-tensorflow-python/blob/master/doc/results-graph2.png)
 
 Future improvements
 
