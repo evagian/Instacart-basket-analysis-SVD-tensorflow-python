@@ -449,7 +449,7 @@ Results
 
 SVD performed significantly better than the other models used for this project.
 
-![alt text](https://github.com/evagian/Instacart-basket-analysis-SVD-tensorflow-python/blob/master/doc/results-graph.png)
+![alt text](https://github.com/evagian/Instacart-basket-analysis-SVD-tensorflow-python/blob/master/doc/Picture1.png)
 
 ![alt text](https://github.com/evagian/Instacart-basket-analysis-SVD-tensorflow-python/blob/master/doc/results-graph1.png)
 
